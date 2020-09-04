@@ -2,13 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FlixOne.BookStore.ProductService.Contexts;
 using FlixOne.BookStore.ProductService.Persistence;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi.Models;
 
 namespace FlixOne.BookStore.ProductService
 {
@@ -27,7 +30,20 @@ namespace FlixOne.BookStore.ProductService
             services.AddControllersWithViews();
 
             //Registering the repositories
-            services.AddSingleton<IProductRepository, ProductRepository>();
+            services.AddScoped<IProductRepository, ProductRepository>();
+
+            services.AddDbContext<ProductContext>(o => o.UseSqlServer(Configuration.GetConnectionString("ProductsConnection")));
+
+            //Register Swagger
+            services.AddSwaggerGen(x =>
+            {
+                x.SwaggerDoc("v1",
+                    new OpenApiInfo
+                    {
+                        Title = "Product API",
+                        Version = "v1"
+                    });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -55,6 +71,13 @@ namespace FlixOne.BookStore.ProductService
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
+            });
+
+            app.UseSwagger();
+
+            app.UseSwaggerUI(option =>
+            {
+                option.SwaggerEndpoint("/swagger/v1/swagger.json", "Product API V1");
             });
         }
     }

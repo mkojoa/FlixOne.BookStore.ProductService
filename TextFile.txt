@@ -1,0 +1,10 @@
+﻿
+1. A Repository is nothing but a simple c# class that contains the logic to retrieve data 
+from the database and map it to the model
+
+2. A controller is responsible for responding to the incoming HTTP requests with the applicable HTTP response
+
+3. A ViewModel contains the various properties to hold/represent the data. This data is displayed on our View of 
+the application. ViewModel doesn't need to have all read/write properties. This data is meant to be shown to the 
+end user on the UI page
+
